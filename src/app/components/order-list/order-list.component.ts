@@ -22,6 +22,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 // Componentes de modales para órdenes
 import { OrderForm } from '../orders/order-form/order-form';
 import { OrderDetails } from '../orders/order-details/order-details';
+import { CustomerService } from '../../services/customer.service';
 
 @Component({
   selector: 'app-order-list',
@@ -73,6 +74,7 @@ export class OrderListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) matSort!: MatSort;
   
   private orderService = inject(OrderService);
+  private customerService = inject(CustomerService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
@@ -255,12 +257,10 @@ export class OrderListComponent implements OnInit, AfterViewInit {
   
   // Create new order
   createNewOrder(): void {
+    // Abrimos directamente el formulario de orden sin seleccionar un cliente primero
     const dialogRef = this.dialog.open(OrderForm, {
       width: '800px',
-      data: {
-        customerId: null, // No hay un cliente seleccionado en esta vista
-        customerName: null
-      }
+      data: {} // No pasamos datos iniciales, el cliente se seleccionará en el formulario
     });
     
     dialogRef.afterClosed().subscribe(result => {
@@ -268,7 +268,7 @@ export class OrderListComponent implements OnInit, AfterViewInit {
         this.snackBar.open('Order created successfully', 'Close', {
           duration: 3000
         });
-        this.loadOrders();
+        this.loadOrders(); // Recargar las órdenes después de crear una nueva
       }
     });
   }

@@ -24,6 +24,24 @@ a {
   border-radius: 8px !important;
 }
 
+/* Table styles */
+.mat-mdc-table .mat-mdc-header-cell,
+.mat-table .mat-header-cell,
+th.mat-header-cell,
+.mat-mdc-header-row,
+.mat-header-row,
+table th {
+  background-color: #9E1F06 !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+/* Añadir un borde inferior para separar del contenido */
+.mat-mdc-header-row,
+.mat-header-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
 /* SnackBar styles */
 .error-snackbar {
   background-color: #f44336;

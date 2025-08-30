@@ -15,6 +15,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Order } from '../../../models/order.model';
 import { OrderService } from '../../../services/order.service';
+import { CustomerService } from '../../../services/customer.service';
+import { Customer } from '../../../models/customer.model';
 
 @Component({
   selector: 'app-order-form',
@@ -40,6 +42,18 @@ import { OrderService } from '../../../services/order.service';
 export class OrderForm implements OnInit {
   orderForm!: FormGroup;
   loading = false;
+  loadingCustomers = false;
+  
+  customers: Customer[] = [];
+  
+  // Array para almacenar los detalles de productos de la orden
+  orderDetails: Array<{
+    productId: number;
+    unitPrice: number;
+    qty: number;
+    discount: number;
+    subtotal?: number;
+  }> = [];
   
   shippers = [
     { id: 1, name: 'Speedy Express' },
@@ -76,12 +90,35 @@ export class OrderForm implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<OrderForm>,
     private orderService: OrderService,
+    private customerService: CustomerService,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { customerId: number, customerName: string }
+    @Inject(MAT_DIALOG_DATA) public data: { customerId?: number, customerName?: string }
   ) {}
   
   ngOnInit(): void {
     this.createForm();
+    this.loadCustomers();
+  }
+  
+  loadCustomers(): void {
+    this.loadingCustomers = true;
+    this.customerService.getCustomers({ pageSize: 100 }).subscribe({
+      next: (response) => {
+        this.customers = response.items || response;
+        this.loadingCustomers = false;
+        
+        // Si ya tenemos un customer seleccionado en los datos del modal, seleccionarlo en el formulario
+        if (this.data?.customerId && this.orderForm) {
+          this.orderForm.get('custId')?.setValue(this.data.customerId);
+          this.updateCustomerInfo(this.data.customerId);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading customers:', error);
+        this.loadingCustomers = false;
+        this.snackBar.open('Error loading customers. Please try again.', 'Close', { duration: 3000 });
+      }
+    });
   }
   
   createForm(): void {
@@ -92,9 +129,10 @@ export class OrderForm implements OnInit {
     // Inicializar el formulario con los valores predeterminados
     this.orderForm = this.fb.group({
       // Sección de orden
+      custId: [this.data?.customerId || null, Validators.required],
       empId: [1, Validators.required],
       shipperId: [1, Validators.required],
-      shipName: [this.data.customerName || '', Validators.required],
+      shipName: [this.data?.customerName || '', Validators.required],
       shipAddress: ['', Validators.required],
       shipCity: ['', Validators.required],
       shipCountry: ['', Validators.required],
@@ -108,6 +146,11 @@ export class OrderForm implements OnInit {
       unitPrice: [0, [Validators.required, Validators.min(0)]],
       quantity: [1, [Validators.required, Validators.min(1)]],
       discount: [0, [Validators.required, Validators.min(0), Validators.max(100)]]
+    });
+    
+    // Si seleccionamos un cliente, actualizamos la información de envío
+    this.orderForm.get('custId')?.valueChanges.subscribe(custId => {
+      this.updateCustomerInfo(custId);
     });
     
     // Si seleccionamos un producto, actualizamos el precio unitario
@@ -128,8 +171,85 @@ export class OrderForm implements OnInit {
     });
   }
   
+  updateCustomerInfo(custId: number): void {
+    if (!custId) return;
+    
+    const selectedCustomer = this.customers.find(c => c.custId === custId);
+    if (selectedCustomer) {
+      // Actualiza los campos de envío con la información del cliente seleccionado
+      this.orderForm.patchValue({
+        shipName: selectedCustomer.companyName,
+        shipAddress: selectedCustomer.address,
+        shipCity: selectedCustomer.city,
+        shipCountry: selectedCustomer.country
+      });
+    }
+  }
+  
+  // Método para agregar un producto a la lista de detalles
+  addProduct(): void {
+    if (this.orderForm.get('productId')?.invalid || 
+        this.orderForm.get('unitPrice')?.invalid || 
+        this.orderForm.get('quantity')?.invalid || 
+        this.orderForm.get('discount')?.invalid) {
+      this.snackBar.open('Por favor, complete todos los campos del producto', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    
+    const formValues = this.orderForm.value;
+    const selectedProduct = this.products.find(p => p.id === formValues.productId);
+    
+    if (!selectedProduct) {
+      this.snackBar.open('Producto no encontrado', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    
+    // Crear un detalle de producto
+    const orderDetail = {
+      productId: formValues.productId,
+      unitPrice: formValues.unitPrice,
+      qty: formValues.quantity,
+      discount: formValues.discount / 100, // Convertir a decimal para guardar
+      subtotal: formValues.unitPrice * formValues.quantity * (1 - formValues.discount / 100)
+    };
+    
+    // Agregar el producto a la lista
+    this.orderDetails.push(orderDetail);
+    
+    // Limpiar el formulario para el siguiente producto
+    this.resetProductForm();
+    
+    this.snackBar.open(`Producto "${selectedProduct.name}" agregado`, 'Cerrar', { duration: 2000 });
+  }
+  
+  // Método para eliminar un producto de la lista
+  removeProduct(index: number): void {
+    this.orderDetails.splice(index, 1);
+    this.snackBar.open('Producto eliminado', 'Cerrar', { duration: 2000 });
+  }
+  
+  // Reiniciar los campos del formulario de producto
+  resetProductForm(): void {
+    this.orderForm.patchValue({
+      productId: 1,
+      unitPrice: this.products[0].price,
+      quantity: 1,
+      discount: 0
+    });
+  }
+
   onSubmit(): void {
     if (this.orderForm.invalid) {
+      return;
+    }
+    
+    if (this.orderDetails.length === 0) {
+      // Si no hay productos agregados, agregamos el actual
+      this.addProduct();
+    }
+    
+    if (this.orderDetails.length === 0) {
+      this.snackBar.open('Debe agregar al menos un producto', 'Cerrar', { duration: 3000 });
       return;
     }
     
@@ -137,20 +257,9 @@ export class OrderForm implements OnInit {
     
     const formValues = this.orderForm.value;
     
-    // Buscar el producto seleccionado
-    const selectedProduct = this.products.find(p => p.id === formValues.productId);
-    
-    // Crear un detalle de orden con los datos del producto seleccionado (para el backend)
-    const orderDetail = {
-      productId: formValues.productId,
-      unitPrice: formValues.unitPrice,
-      qty: formValues.quantity, // Cambiado de quantity a qty según el nuevo esquema del API
-      discount: formValues.discount / 100, // Convertir a decimal
-    };
-    
     // Crear la nueva orden según la estructura del API
     const newOrder = {
-      custId: this.data.customerId, // ID del cliente desde los datos del modal
+      custId: formValues.custId, // ID del cliente seleccionado por el usuario desde el dropdown
       empId: formValues.empId,
       // El backend asignará orderDate automáticamente si no lo enviamos
       requiredDate: formValues.requiredDate.toISOString(),
@@ -162,8 +271,20 @@ export class OrderForm implements OnInit {
       shipRegion: '', // Enviamos string vacío para campos opcionales
       shipPostalCode: '', // Enviamos string vacío para campos opcionales
       shipCountry: formValues.shipCountry,
-      orderDetails: [orderDetail]
+      orderDetails: this.orderDetails.map(detail => ({
+        productId: detail.productId,
+        unitPrice: detail.unitPrice,
+        qty: detail.qty,
+        discount: detail.discount // Ya está convertido a decimal
+      }))
     };
+    
+    // Asegurarnos de que custId no sea null
+    if (!newOrder.custId) {
+      this.snackBar.open('Please select a customer before submitting', 'Close', { duration: 3000 });
+      this.loading = false;
+      return;
+    }
     
     console.log('Enviando orden al servidor:', newOrder);
     
@@ -186,12 +307,29 @@ export class OrderForm implements OnInit {
     this.dialogRef.close();
   }
   
-  calculateTotal(): string {
+  // Calcula el subtotal del producto actual en el formulario
+  calculateSubtotal(): string {
     const unitPrice = this.orderForm.get('unitPrice')?.value || 0;
     const quantity = this.orderForm.get('quantity')?.value || 0;
     const discount = this.orderForm.get('discount')?.value || 0;
     
-    const total = unitPrice * quantity * (1 - discount / 100);
+    const subtotal = unitPrice * quantity * (1 - discount / 100);
+    return subtotal.toFixed(2);
+  }
+  
+  // Calcula el total de todos los productos agregados
+  calculateTotal(): string {
+    if (this.orderDetails.length === 0) {
+      return this.calculateSubtotal();
+    }
+    
+    const total = this.orderDetails.reduce((sum, detail) => sum + detail.subtotal!, 0);
     return total.toFixed(2);
+  }
+  
+  // Obtener el nombre del producto por ID
+  getProductName(productId: number): string {
+    const product = this.products.find(p => p.id === productId);
+    return product ? product.name : 'Producto desconocido';
   }
 }

@@ -1,9 +1,24 @@
 <div class="order-form-container">
-  <h2 class="mat-title">{{ data.customerName ? 'Customer ' + data.customerName + ' - New Order' : 'New Order' }}</h2>
+  <h2 class="mat-title">New Order</h2>
   
   <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
     <div class="form-section">
       <h3 class="section-title">Order</h3>
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Customer*</mat-label>
+          <mat-select formControlName="custId" [disabled]="loadingCustomers">
+            <mat-option *ngIf="loadingCustomers">Loading customers...</mat-option>
+            <mat-option *ngFor="let customer of customers" [value]="customer.custId">
+              {{ customer.companyName }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="orderForm.get('custId')?.hasError('required')">
+            Customer is required
+          </mat-error>
+        </mat-form-field>
+      </div>
       
       <div class="form-row">
         <mat-form-field appearance="outline">
@@ -158,16 +173,53 @@
         </mat-form-field>
       </div>
       
-      <div class="form-row total-row">
-        <div class="total-label">Total:</div>
-        <div class="total-value">${{ calculateTotal() }}</div>
+      <div class="form-row subtotal-row">
+        <div class="total-label">Product Subtotal:</div>
+        <div class="total-value">${{ calculateSubtotal() }}</div>
       </div>
       
-      <!-- Para futuras implementaciones: botón para agregar más productos -->
       <div class="form-row action-row">
-        <button type="button" mat-stroked-button color="primary" class="add-product-btn" matTooltip="This feature will be implemented in a future version">
-          <mat-icon>add</mat-icon> Add Another Product
+        <button type="button" mat-stroked-button color="primary" class="add-product-btn" (click)="addProduct()">
+          <mat-icon>add</mat-icon> Add Product
         </button>
+      </div>
+      
+      <!-- Lista de productos agregados -->
+      <div class="order-products-list" *ngIf="orderDetails.length > 0">
+        <h3 class="section-title">Products Added to Order</h3>
+        
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Discount</th>
+              <th>Subtotal</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detail of orderDetails; let i = index">
+              <td>{{ getProductName(detail.productId) }}</td>
+              <td>{{ detail.qty }}</td>
+              <td>${{ detail.unitPrice.toFixed(2) }}</td>
+              <td>{{ (detail.discount * 100).toFixed(0) }}%</td>
+              <td>${{ detail.subtotal!.toFixed(2) }}</td>
+              <td>
+                <button mat-icon-button color="warn" (click)="removeProduct(i)" matTooltip="Remove this product">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" class="total-label">Order Total:</td>
+              <td colspan="2" class="total-value">${{ calculateTotal() }}</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
     

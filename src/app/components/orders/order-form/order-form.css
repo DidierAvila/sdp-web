@@ -48,6 +48,64 @@
   gap: 8px;
 }
 
+.total-row, .subtotal-row {
+  justify-content: flex-end;
+  align-items: center;
+  font-weight: 500;
+}
+
+.total-label, .total-value {
+  font-size: 16px;
+  padding: 8px;
+}
+
+.total-value {
+  min-width: 80px;
+  text-align: right;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.action-row {
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.add-product-btn {
+  width: 100%;
+}
+
+.order-products-list {
+  margin-top: 24px;
+  border-top: 1px dashed #ccc;
+  padding-top: 16px;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.products-table th,
+.products-table td {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.products-table th {
+  background-color: #9E1F06;
+  font-weight: 500;
+  color: white;
+}
+
+.products-table tfoot td {
+  border-bottom: none;
+  padding-top: 16px;
+  font-weight: bold;
+}
+
 button {
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -1,0 +1,129 @@
+.prediction-container {
+  padding: 24px;
+  margin: 24px;
+  background-color: white;
+  border-radius: 8px;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.title-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: rgba(0, 0, 0, 0.54);
+  margin-top: -8px;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 500px;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+}
+
+.error-container {
+  color: #f44336;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.prediction-table {
+  width: 100%;
+}
+
+.customer-column {
+  min-width: 200px;
+}
+
+.date-column {
+  min-width: 140px;
+}
+
+.days-column {
+  min-width: 120px;
+  text-align: center;
+}
+
+.actions-column {
+  width: 80px;
+  text-align: center;
+}
+
+.prediction-badge {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.status-overdue {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #d32f2f;
+}
+
+.status-upcoming {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ef6c00;
+}
+
+.status-future {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
+}
+
+.days-indicator {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+@media screen and (max-width: 768px) {
+  .prediction-container {
+    padding: 16px;
+    margin: 16px;
+  }
+  
+  .header-container {
+    flex-direction: column;
+  }
+  
+  .search-field {
+    margin-top: 16px;
+    max-width: 100%;
+  }
+}

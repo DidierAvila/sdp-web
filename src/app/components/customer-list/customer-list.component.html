@@ -1,0 +1,121 @@
+<div class="customer-list-container mat-elevation-z2">
+  <div class="header-container">
+    <div class="title-section">
+      <h1 class="mat-headline-5">Customers List</h1>
+      
+      <div class="actions-container">
+        <a mat-raised-button color="primary" routerLink="/customers/new">
+          <mat-icon>add</mat-icon> Add New Customer
+        </a>
+      </div>
+    </div>
+    
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search customers</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (input)="onSearchInput($event)" placeholder="Search by name, company or country...">
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading customers...</span>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>Error loading customers.</span>
+    <button mat-raised-button color="primary" (click)="loadCustomers()">Retry</button>
+  </div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <mat-card class="empty-state" *ngIf="customers.length === 0">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <p>No customers found. Click "Add New Customer" to create one.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <table mat-table [dataSource]="customers" matSort *ngIf="customers.length > 0" 
+           class="mat-elevation-z1 customer-table">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="custId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="id-column">ID</th>
+        <td mat-cell *matCellDef="let customer" class="id-column">{{customer.custId}}</td>
+      </ng-container>
+
+      <!-- Company Column -->
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="company-column">Company</th>
+        <td mat-cell *matCellDef="let customer" class="company-column">{{customer.companyName}}</td>
+      </ng-container>
+
+      <!-- Contact Column -->
+      <ng-container matColumnDef="contactName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="contact-column">Contact</th>
+        <td mat-cell *matCellDef="let customer" class="contact-column">{{customer.contactName}}</td>
+      </ng-container>
+
+      <!-- Country Column -->
+      <ng-container matColumnDef="country">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="country-column">Country</th>
+        <td mat-cell *matCellDef="let customer" class="country-column">{{customer.country}}</td>
+      </ng-container>
+
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="phone-column">Phone</th>
+        <td mat-cell *matCellDef="let customer" class="phone-column">{{customer.phone}}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
+        <td mat-cell *matCellDef="let customer" class="action-buttons actions-column" style="height: 52px;">
+          <a mat-icon-button 
+             color="primary" 
+             [routerLink]="['/customers', customer.custId, 'edit']" 
+             matTooltip="Ver cliente"
+             matTooltipPosition="above"
+             [matTooltipShowDelay]="300">
+            <mat-icon>visibility</mat-icon>
+          </a>
+          <a mat-icon-button 
+             color="accent" 
+             [routerLink]="['/customers', customer.custId, 'orders']"
+             matTooltip="Ver órdenes"
+             matTooltipPosition="above"
+             [matTooltipShowDelay]="300">
+            <mat-icon>list_alt</mat-icon>
+          </a>
+          <button mat-icon-button 
+             color="accent" 
+             (click)="createNewOrder(customer)"
+             matTooltip="Nueva orden"
+             matTooltipPosition="above"
+             [matTooltipShowDelay]="300">
+            <mat-icon>add_shopping_cart</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Material Paginator -->
+    <mat-paginator 
+      *ngIf="totalItems > 0"
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageNumber - 1"
+      (page)="handlePageEvent($event)"
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>

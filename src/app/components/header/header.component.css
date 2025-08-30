@@ -1,0 +1,35 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+}
+
+.nav a {
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.nav a.active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.mat-icon {
+  margin-right: 4px;
+}
+
+.nav a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav a.active {
+  background-color: rgba(255, 255, 255, 0.3);
+}

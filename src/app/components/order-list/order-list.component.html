@@ -1,0 +1,125 @@
+<div class="order-list-container mat-elevation-z2">
+  <div class="header-container">
+    <div class="title-section">
+      <h1 class="mat-headline-5">Orders List</h1>
+      
+      <div class="actions-container">
+        <button mat-raised-button color="primary" (click)="createNewOrder()">
+          <mat-icon>add</mat-icon> New Order
+        </button>
+      </div>
+    </div>
+    
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search orders</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (input)="onSearchInput($event)" placeholder="Search by ID, customer or country...">
+      <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading orders...</span>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>Error loading orders.</span>
+    <button mat-raised-button color="primary" (click)="loadOrders()">Retry</button>
+  </div>
+
+  <div class="table-container" *ngIf="!loading && !error">
+    <mat-card class="empty-state" *ngIf="orders.length === 0">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <p>No orders found. Click "New Order" to create one.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <table mat-table [dataSource]="orders" matSort *ngIf="orders.length > 0" 
+           class="mat-elevation-z1 order-table">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="orderId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="id-column">Order ID</th>
+        <td mat-cell *matCellDef="let order" class="id-column">{{order.orderId}}</td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="orderDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="date-column">Date</th>
+        <td mat-cell *matCellDef="let order" class="date-column">{{formatDate(order.orderDate)}}</td>
+      </ng-container>
+
+      <!-- Customer Column -->
+      <ng-container matColumnDef="shipName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="customer-column">Customer</th>
+        <td mat-cell *matCellDef="let order" class="customer-column">{{order.shipName}}</td>
+      </ng-container>
+
+      <!-- Country Column -->
+      <ng-container matColumnDef="shipCountry">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="country-column">Country</th>
+        <td mat-cell *matCellDef="let order" class="country-column">{{order.shipCountry}}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="status-column">Status</th>
+        <td mat-cell *matCellDef="let order" class="status-column">
+          <span [ngClass]="'status-badge ' + getStatusClass(order.status)">
+            {{order.status}}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
+        <td mat-cell *matCellDef="let order" class="action-buttons actions-column" style="height: 52px;">
+          <button mat-icon-button 
+                 color="primary" 
+                 (click)="viewOrderDetails(order)"
+                 matTooltip="View details"
+                 matTooltipPosition="above"
+                 [matTooltipShowDelay]="300">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <a mat-icon-button 
+             color="accent" 
+             [routerLink]="['/customers', order.custId, 'orders']"
+             matTooltip="View customer"
+             matTooltipPosition="above"
+             [matTooltipShowDelay]="300">
+            <mat-icon>person</mat-icon>
+          </a>
+          <button mat-icon-button 
+                 color="warn" 
+                 matTooltip="Print order"
+                 matTooltipPosition="above"
+                 [matTooltipShowDelay]="300">
+            <mat-icon>print</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          class="clickable-row" 
+          (click)="viewOrderDetails(row)"></tr>
+    </table>
+
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageNumber - 1"
+      (page)="handlePageEvent($event)"
+      showFirstLastButtons
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>

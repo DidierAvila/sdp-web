@@ -1,0 +1,18 @@
+<mat-toolbar color="primary" class="header">
+  <span>{{ title }}</span>
+  <div class="spacer"></div>
+  <nav class="nav">
+    <a mat-button routerLink="/customers" routerLinkActive="active">
+      <mat-icon>people</mat-icon> Customers
+    </a>
+    <a mat-button routerLink="/orders" routerLinkActive="active">
+      <mat-icon>shopping_cart</mat-icon> Orders
+    </a>
+    <a mat-button routerLink="/predictions" routerLinkActive="active">
+      <mat-icon>timeline</mat-icon> Sales Predictions
+    </a>
+    <a mat-button routerLink="/graphics" routerLinkActive="active">
+      <mat-icon>bar_chart</mat-icon> Graphics
+    </a>
+  </nav>
+</mat-toolbar>

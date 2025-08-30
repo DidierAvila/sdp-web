@@ -1,0 +1,32 @@
+<div class="graphics-container">
+  <div class="chart-header">
+    <h2 class="chart-title">Gráfico de Barras D3.js</h2>
+    
+    <div class="source-data-container">
+      <mat-form-field appearance="outline" class="source-data-field">
+        <mat-label>Source Data:</mat-label>
+        <input matInput [(ngModel)]="sourceData" placeholder="Ej: 4,8,15,16">
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="updateData()">Update Data</button>
+    </div>
+  </div>
+  
+  <div class="chart-container">
+    <div #barChart style="width: 100%;"></div>
+  </div>
+  
+  <mat-card class="description-card">
+    <mat-card-content>
+      <p class="chart-explanation">
+        <strong>Source Data:</strong> Ingrese números enteros separados por comas en el campo de texto.
+      </p>
+      <p class="chart-explanation">
+        <strong>Update Data:</strong> Haga clic para actualizar el gráfico con los nuevos datos.
+      </p>
+      <p class="chart-explanation">
+        <strong>Gráfico:</strong> Muestra barras de diferentes colores basadas en los valores ingresados.
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>

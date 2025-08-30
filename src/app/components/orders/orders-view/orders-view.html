@@ -1,0 +1,68 @@
+<div class="orders-view-container">
+  <h2 class="mat-title">Órdenes de {{ data.customerName }}</h2>
+  
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Cargando órdenes...</span>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>Error cargando órdenes.</span>
+    <button mat-raised-button color="primary" (click)="loadOrders()">Reintentar</button>
+  </div>
+  
+  <div class="table-container" *ngIf="!loading && !error">
+    <div *ngIf="orders.length === 0" class="empty-state">
+      <mat-icon>info</mat-icon>
+      <p>No se encontraron órdenes para este cliente.</p>
+    </div>
+    
+    <table mat-table [dataSource]="orders" *ngIf="orders.length > 0" class="orders-table">
+      <!-- ID Column -->
+      <ng-container matColumnDef="orderId">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let order">{{ order.orderId }}</td>
+      </ng-container>
+      
+      <!-- Order Date Column -->
+      <ng-container matColumnDef="orderDate">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let order">{{ formatDate(order.orderDate) }}</td>
+      </ng-container>
+      
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let order">
+          <span [ngClass]="'status-badge status-' + order.status?.toLowerCase()">
+            {{ order.status }}
+          </span>
+        </td>
+      </ng-container>
+      
+      <!-- Ship Country Column -->
+      <ng-container matColumnDef="shipCountry">
+        <th mat-header-cell *matHeaderCellDef>País Envío</th>
+        <td mat-cell *matCellDef="let order">{{ order.shipCountry }}</td>
+      </ng-container>
+      
+      <!-- Details Column -->
+      <ng-container matColumnDef="details">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let order" class="action-cell">
+          <button mat-icon-button color="primary" matTooltip="Ver detalles" (click)="viewOrderDetails(order)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  
+  <div class="dialog-actions">
+    <button mat-button (click)="close()">Cerrar</button>
+  </div>
+</div>

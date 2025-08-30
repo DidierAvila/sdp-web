@@ -6,8 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:sdp-web": "node dist/sdp-web/server/server.mjs"
+    "test": "ng test"
   },
   "prettier": {
     "overrides": [
@@ -21,14 +20,19 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^20.2.3",
+    "@angular/cdk": "^20.2.1",
     "@angular/common": "^20.1.0",
     "@angular/compiler": "^20.1.0",
     "@angular/core": "^20.1.0",
     "@angular/forms": "^20.1.0",
+    "@angular/material": "^20.2.1",
     "@angular/platform-browser": "^20.1.0",
     "@angular/platform-server": "^20.1.0",
     "@angular/router": "^20.1.0",
     "@angular/ssr": "^20.1.4",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

@@ -1,0 +1,97 @@
+.order-form-container {
+  padding: 0;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.order-form-container h2 {
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+  padding: 0 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 16px 0;
+  color: #333;
+  padding-bottom: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+  gap: 8px;
+}
+
+button {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button[type="submit"] {
+  position: relative;
+  background-color: #4caf50;
+  color: white;
+}
+
+.button-spinner {
+  position: absolute;
+  left: 10px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.total-label {
+  font-weight: 500;
+  margin-right: 16px;
+}
+
+.total-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: #4caf50;
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.add-product-btn {
+  color: #4caf50;
+  border-color: #4caf50;
+}

@@ -1,0 +1,113 @@
+<div class="customer-orders-container mat-elevation-z2">
+  <div class="header-container">
+    <div class="breadcrumb">
+      <a (click)="goBackToCustomers()">Clientes</a> &gt;
+      <span *ngIf="customer">{{ customer.companyName }}</span>
+      <span *ngIf="!customer">Cliente</span>
+    </div>
+    
+    <div class="title-section">
+      <h1 class="mat-headline-5" *ngIf="customer">Órdenes de {{ customer.companyName }}</h1>
+      <h1 class="mat-headline-5" *ngIf="!customer">Órdenes del cliente</h1>
+      
+      <div class="actions-container">
+        <button mat-raised-button color="primary" (click)="createNewOrder()">
+          <mat-icon>add</mat-icon> Nueva Orden
+        </button>
+      </div>
+    </div>
+    
+    <div class="customer-info" *ngIf="customer">
+      <div class="info-card mat-elevation-z1">
+        <div class="info-title">Información del cliente</div>
+        <div class="info-row">
+          <span class="info-label">Contacto:</span>
+          <span class="info-value">{{ customer.contactName }}, {{ customer.contactTitle }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Dirección:</span>
+          <span class="info-value">{{ customer.address }}, {{ customer.city }}, {{ customer.country }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Teléfono:</span>
+          <span class="info-value">{{ customer.phone }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Cargando órdenes...</span>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>Error cargando órdenes.</span>
+    <button mat-raised-button color="primary" (click)="loadOrders()">Reintentar</button>
+  </div>
+
+  <div class="content-container" *ngIf="!loading && !error">
+    <mat-card class="empty-state" *ngIf="orders.length === 0">
+      <mat-card-content>
+        <mat-icon>info</mat-icon>
+        <p>No se encontraron órdenes para este cliente. Haga clic en "Nueva Orden" para crear una.</p>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="orders-table-container" *ngIf="orders.length > 0">
+      <table mat-table [dataSource]="orders" class="mat-elevation-z1 orders-table">
+        <!-- ID Column -->
+        <ng-container matColumnDef="orderId">
+          <th mat-header-cell *matHeaderCellDef class="id-column">ID</th>
+          <td mat-cell *matCellDef="let order" class="id-column">{{ order.orderId }}</td>
+        </ng-container>
+        
+        <!-- Order Date Column -->
+        <ng-container matColumnDef="orderDate">
+          <th mat-header-cell *matHeaderCellDef>Fecha de Orden</th>
+          <td mat-cell *matCellDef="let order">{{ formatDate(order.orderDate) }}</td>
+        </ng-container>
+        
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let order">
+            <span class="status-badge" [ngClass]="getStatusClass(order.status || '')">
+              {{ order.status }}
+            </span>
+          </td>
+        </ng-container>
+        
+        <!-- Ship Country Column -->
+        <ng-container matColumnDef="shipCountry">
+          <th mat-header-cell *matHeaderCellDef>País de Envío</th>
+          <td mat-cell *matCellDef="let order">{{ order.shipCountry }}</td>
+        </ng-container>
+        
+        <!-- Details Column -->
+        <ng-container matColumnDef="details">
+          <th mat-header-cell *matHeaderCellDef class="actions-column">Acciones</th>
+          <td mat-cell *matCellDef="let order" class="action-buttons actions-column" style="height: 52px;">
+            <a mat-icon-button 
+               color="primary" 
+               [routerLink]="['/orders', order.orderId]" 
+               matTooltip="Ver detalles"
+               matTooltipPosition="above">
+              <mat-icon>visibility</mat-icon>
+            </a>
+            <button mat-icon-button 
+                   color="accent" 
+                   matTooltip="Imprimir orden"
+                   matTooltipPosition="above">
+              <mat-icon>print</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+</div>

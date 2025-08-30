@@ -1,0 +1,81 @@
+.order-details-container {
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.order-details-container h2 {
+  background-color: #3f51b5;
+  color: white;
+  padding: 16px;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  gap: 16px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  gap: 16px;
+  color: #f44336;
+}
+
+.order-info {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.order-info-item {
+  margin-bottom: 8px;
+}
+
+.order-info-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.order-details-table {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.product-column {
+  min-width: 200px;
+}
+
+.price-column, .quantity-column, .discount-column, .total-column {
+  text-align: right;
+}
+
+.total-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+}

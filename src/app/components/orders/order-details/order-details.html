@@ -1,0 +1,106 @@
+<div class="order-details-container">
+  <h2 class="mat-title">Order Details #{{ data.orderId }}</h2>
+  
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading order details...</span>
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <span>Error loading order details.</span>
+    <button mat-raised-button color="primary" (click)="loadOrderDetails()">Retry</button>
+  </div>
+  
+  <div *ngIf="!loading && !error && orderDetails">
+    <mat-card class="order-info">
+      <mat-card-content>
+        <div class="order-info-grid">
+          <div class="order-info-item">
+            <div class="order-info-label">Customer:</div>
+            <div>{{ orderDetails.customerName }}</div>
+          </div>
+          
+          <div class="order-info-item">
+            <div class="order-info-label">Order Date:</div>
+            <div>{{ formatDate(orderDetails.orderDate) }}</div>
+          </div>
+          
+          <div class="order-info-item" *ngIf="orderDetails.requiredDate">
+            <div class="order-info-label">Required Date:</div>
+            <div>{{ formatDate(orderDetails.requiredDate) }}</div>
+          </div>
+          
+          <div class="order-info-item" *ngIf="orderDetails.shippedDate">
+            <div class="order-info-label">Shipped Date:</div>
+            <div>{{ formatDate(orderDetails.shippedDate) }}</div>
+          </div>
+          
+          <div class="order-info-item" *ngIf="orderDetails.shipAddress">
+            <div class="order-info-label">Ship Address:</div>
+            <div>{{ orderDetails.shipAddress }}</div>
+          </div>
+          
+          <div class="order-info-item" *ngIf="orderDetails.shipCity">
+            <div class="order-info-label">Ship City:</div>
+            <div>{{ orderDetails.shipCity }}, {{ orderDetails.shipCountry }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <div *ngIf="orderDetails.details && orderDetails.details.length > 0">
+      <h3 class="mat-title" style="padding-left: 16px; margin-bottom: 0;">Order Items</h3>
+      
+      <table mat-table [dataSource]="orderDetails.details" class="order-details-table">
+        <!-- Product Column -->
+        <ng-container matColumnDef="productName">
+          <th mat-header-cell *matHeaderCellDef class="product-column">Product</th>
+          <td mat-cell *matCellDef="let detail" class="product-column">
+            {{ detail.product?.productName || detail.productName || 'Unknown Product' }}
+          </td>
+        </ng-container>
+        
+        <!-- Unit Price Column -->
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef class="price-column">Unit Price</th>
+          <td mat-cell *matCellDef="let detail" class="price-column">{{ formatCurrency(detail.unitPrice) }}</td>
+        </ng-container>
+        
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef class="quantity-column">Quantity</th>
+          <td mat-cell *matCellDef="let detail" class="quantity-column">{{ detail.quantity || detail.qty || 0 }}</td>
+        </ng-container>
+        
+        <!-- Discount Column -->
+        <ng-container matColumnDef="discount">
+          <th mat-header-cell *matHeaderCellDef class="discount-column">Discount</th>
+          <td mat-cell *matCellDef="let detail" class="discount-column">{{ (detail.discount * 100) }}%</td>
+        </ng-container>
+        
+        <!-- Total Column -->
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef class="total-column">Total</th>
+          <td mat-cell *matCellDef="let detail" class="total-column">{{ formatCurrency(calculateTotal(detail)) }}</td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      
+      <div class="total-row">
+        <div>Order Total: {{ formatCurrency(calculateOrderTotal()) }}</div>
+      </div>
+    </div>
+    
+    <div *ngIf="!orderDetails.details || orderDetails.details.length === 0" class="loading-container">
+      <mat-icon>info</mat-icon>
+      <span>No items found in this order.</span>
+    </div>
+  </div>
+  
+  <div class="dialog-actions">
+    <button mat-button (click)="close()">Close</button>
+  </div>
+</div>
